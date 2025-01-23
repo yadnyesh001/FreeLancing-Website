@@ -4,10 +4,14 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
 export const signup = async (req, res) => {
-  const { name, username, email, password } = req.body;
+  const { name, username, email, password, role } = req.body;
 
-  if (!name || !username || !email || !password) {
+  if (!name || !username || !email || !password || !role) {
     return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  if(role === 'admin'){
+    return res.status(400).json({ message: 'Admin registration not allowed' });
   }
 
   try {
@@ -32,6 +36,7 @@ export const signup = async (req, res) => {
       username,
       email, 
       password: hashedPassword,
+      role,
     }); 
 
     await user.save();
