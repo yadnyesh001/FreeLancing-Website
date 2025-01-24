@@ -22,7 +22,24 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['freelancer', 'client', 'admin'],
+    default: 'freelancer',
   },
+  bio: {
+    type: String,
+    default: '',
+  },
+  skills: {
+    type: [String], 
+    default: [],
+  },
+  profilePicture: {
+    type: String, 
+    default: '',
+  },
+  active: {
+    type: Boolean,
+    default: true, 
+  }
 },{
   timestamps: true,
 });
