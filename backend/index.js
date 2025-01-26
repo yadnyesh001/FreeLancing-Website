@@ -21,7 +21,6 @@ app.use('/api/v1/profile', profileRoutes);
 app.use('/api/v1/job', jobRoutes);
 app.use('/api/v1/bid', bidRoutes);
 
-
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {

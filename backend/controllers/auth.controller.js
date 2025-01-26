@@ -42,7 +42,9 @@ export const signup = async (req, res) => {
       expiresIn: "3d",
     });
 
-    res.cookie("jwt-freelancing", token, {
+    const cookieName = process.env.COOKIE_NAME || "jwt-freelancing";
+
+    res.cookie(cookieName, token, {
       httpOnly: true, // to disable accessing token via client side
       maxAge: 3 * 24 * 60 * 60 * 1000, // session cookie will expire after 3 days
       sameSite: 'strict',  // cookie will only be sent in same-site context
@@ -88,7 +90,9 @@ export const login = async (req, res) => {
       expiresIn: "3d",
     });
 
-    res.cookie("jwt-freelancing", token, {
+    const cookieName = process.env.COOKIE_NAME || "jwt-freelancing";
+
+    res.cookie(cookieName, token, {
       httpOnly: true, // to disable accessing token via client side
       maxAge: 3 * 24 * 60 * 60 * 1000, // session cookie will expire after 3 days
       sameSite: 'strict',  // cookie will only be sent in same-site context
@@ -111,21 +115,31 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  const cookieName = 'jwt-freelancing'; // Ensure this matches your login cookie name
+  try {
+    const cookieName = process.env.COOKIE_NAME || 'jwt-freelancing'; // Use environment variable or default
 
-  // Clear the cookie
-  res.clearCookie(cookieName, {
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-  });
+    // Clear the cookie
+    res.clearCookie(cookieName, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
 
-  // Send response
-  res.status(200).json({
-    success: true,
-    message: "Logged out successfully",
-    timestamp: new Date().toISOString(),
-  });
+    // Send response
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+      timestamp: new Date().toISOString(),
+    });
+    
+  } catch (error) {
+    console.error('Logout Error:', error); // Log error for server-side debugging
+
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred during logout",
+    });
+  }
 };
 
 export const getMe = async (req, res) => {

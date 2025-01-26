@@ -3,6 +3,7 @@ import User from '../models/user.model.js';
 
 export const protectRoute = async (req, res, next) => {
   try {
+    const cookieName = process.env.COOKIE_NAME || "jwt-freelancing";
     const token = req.cookies["jwt-freelancing"];
     
     if (!token) {
@@ -17,7 +18,7 @@ export const protectRoute = async (req, res, next) => {
     
     const user = await User.findById(decoded.id).select("-password");
 
-    console.log(user);
+    // console.log(user);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
