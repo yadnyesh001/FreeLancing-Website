@@ -18,8 +18,11 @@ dotenv.config();
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/profile', profileRoutes);
-app.use('/api/v1/job', jobRoutes);
-app.use('/api/v1/bid', bidRoutes);
+app.use('/api/v1/jobs', jobRoutes);
+app.use('/api/v1', bidRoutes);
+app.use('/api/v1/contracts', contractRoutes);
+app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/v1/ratings', ratingRoutes);
 
 const PORT = process.env.PORT || 3000;
 
