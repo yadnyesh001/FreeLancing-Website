@@ -39,7 +39,17 @@ export const signup = async (req, res) => {
       secure: process.env.NODE_ENV === 'production',
     });
 
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).json({ 
+      success: true,
+      message: "User registered successfully",
+      user: {
+        id: user._id, 
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt, 
+      }
+    });
 
   } catch (error) {
     console.log("Error in signup: ", error.message);
@@ -48,13 +58,51 @@ export const signup = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-  res.json('login'); 
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if(!user){
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if(!isMatch){
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3d' });
+    await res.cookie("jwt-freelancing", token, {
+      httpOnly: true,
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    res.status(201).json({ 
+      success: true,
+      message: "User registered successfully",
+      user: {
+        id: user._id, 
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+      }
+    });
+
+  } catch (error) {
+    console.log("Error in login: ", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  } 
 }
 
 export const logout = async (req, res) => {
-  res.json('logout');
-}
-
-export const getMe = async (req, res) => {
-  res.json('me');
+  try {
+    res.clearCookie('jwt-freelancing');
+    res.json({ message: 'Logged out successfully' });
+  } catch (error) {
+    console.log("Error in logout: ", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
 }
