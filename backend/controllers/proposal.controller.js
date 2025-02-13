@@ -1,6 +1,5 @@
 import Proposal from "../models/proposal.model.js";
 import Project from "../models/project.model.js";
-import User from "../models/user.model.js";
 
 export const submitProposal = async (req, res) => {
   try {
@@ -28,7 +27,6 @@ export const getProposalsByProjectId = async (req, res) => {
     const { id } = req.params;
     const proposals = await Proposal.find({ projectId: id });
     res.status(200).json(proposals);
-
   } catch (error) {
     console.error("Error in getProposalsByProjectId:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -51,7 +49,6 @@ export const acceptOrRejectProposal = async (req, res) => {
     proposal.status = status;
     await proposal.save();
     res.status(200).json(proposal);
-
   } catch (error) {
     console.error("Error in acceptOrRejectProposal:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
