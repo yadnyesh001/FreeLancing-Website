@@ -11,12 +11,13 @@ export const submitProposal = async (req, res) => {
 
     const proposal = new Proposal({
       ...req.body,
-      freelancerId: req.user._id,
+      freelancerId: req.user,
     });
 
     await proposal.save();
     res.status(201).json(proposal);
-  } catch (error) {
+  } 
+  catch (error) {
     console.error("Error in submitProposal:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
