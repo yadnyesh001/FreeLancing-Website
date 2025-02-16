@@ -5,11 +5,14 @@ import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import projectRoutes from './routes/project.route.js';
 import proposalRoutes from './routes/proposal.route.js';
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 
 app.use(express.json());
 
