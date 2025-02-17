@@ -1,87 +1,196 @@
-import React, { useState } from 'react'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  
+  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    setError('') 
+  const validateForm = () => {
+    const newErrors = {};
+    
+    // Email validation
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     try {
-      const response = await axios.post('http://localhost:3000/api/v1/auth/login', {
-        email,
-        password
-      },{
-        withCredentials: true
-      })
+      setLoading(true);
 
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('role', response.data.user.role)
+      const response = await fetch("http://localhost:3000/api/v1/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-      if (response.data.user.role === 'admin') {
-        navigate('/admin')
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        navigate("/dashboard");
       } else {
-        navigate('/')
+        setErrors({
+          submit: data.message || "Invalid credentials. Please try again."
+        });
       }
     } catch (error) {
-      console.error('Login Error:', error)
-      setError('Invalid email or password. Please try again.')
+      setErrors({
+        submit: "Network error. Please check your connection and try again."
+      });
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleLogin}
-        className="w-full max-w-sm bg-white p-8 rounded shadow-md"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-
-        {error && (
-          <div className="bg-red-100 text-red-700 p-2 rounded mb-4">
-            {error}
-          </div>
-        )}
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200"
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="w-full max-w-md p-6">
+        <form 
+          onSubmit={handleSubmit} 
+          className="bg-white rounded-lg shadow-lg p-8"
+          noValidate
         >
-          Login
-        </button>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            Welcome Back
+          </h1>
 
-        <p className="text-center mt-4">
-          Don't have an account?{' '}
-          <a href="/signup" className="text-blue-500 hover:underline">
-            Sign Up
-          </a>
-        </p>
-      </form>
+          {errors.submit && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md" role="alert">
+              {errors.submit}
+            </div>
+          )}
+
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address
+            </label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
+              aria-invalid={errors.email ? "true" : "false"}
+              aria-describedby={errors.email ? "email-error" : undefined}
+              disabled={loading}
+            />
+            {errors.email && (
+              <p id="email-error" className="mt-1 text-sm text-red-600">
+                {errors.email}
+              </p>
+            )}
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.password ? 'border-red-500' : 'border-gray-300'
+                }`}
+                aria-invalid={errors.password ? "true" : "false"}
+                aria-describedby={errors.password ? "password-error" : undefined}
+                disabled={loading}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+            {errors.password && (
+              <p id="password-error" className="mt-1 text-sm text-red-600">
+                {errors.password}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className={`w-full py-2 px-4 rounded-md text-white font-medium transition-colors cursor-pointer
+              ${loading 
+                ? 'bg-blue-400 cursor-not-allowed' 
+                : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+              }`}
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing in...
+              </span>
+            ) : (
+              "Sign in"
+            )}
+          </button>
+
+          <div className="mt-4 text-center text-sm text-gray-600">
+            <a href="/signup" className="text-blue-600 hover:text-blue-700">
+              Don't have an account? Sign up
+            </a>
+          </div>
+        </form>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

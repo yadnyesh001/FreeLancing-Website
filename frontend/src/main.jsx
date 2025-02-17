@@ -5,7 +5,7 @@ import App from './App'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>  {/* Added StrictMode for better development checks */}
+  <React.StrictMode> 
     <Router>
       <App />
     </Router>
