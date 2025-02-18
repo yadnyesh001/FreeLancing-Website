@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignUp = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -10,6 +13,7 @@ const SignUp = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,13 +56,29 @@ const SignUp = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
     
     if (Object.keys(newErrors).length === 0) {
-      // Form is valid, you can submit the data here
-      console.log('Form submitted:', formData);
+      try {
+        const response = await axios.post('http://localhost:3000/api/v1/auth/signup', formData, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log('Form submitted:', response.data);
+        // Navigate to login or dashboard after successful signup
+        navigate('/login');
+      } catch (error) {
+        console.error('Error during signup:', error);
+        if (error.response) {
+          setServerError(error.response.data.message || 'Something went wrong. Please try again.');
+        } else {
+          setServerError('Network error. Please check your connection.');
+        }
+      }
     } else {
       setErrors(newErrors);
     }
@@ -78,6 +98,10 @@ const SignUp = () => {
             </Link>
           </p>
         </div>
+        
+        {serverError && (
+          <p className="text-red-500 text-center text-sm">{serverError}</p>
+        )}
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
@@ -108,7 +132,6 @@ const SignUp = () => {
                 id="email"
                 name="email"
                 type="email"
-                autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
                 className={`mt-1 block w-full rounded-md border ${
@@ -128,7 +151,6 @@ const SignUp = () => {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="new-password"
                 value={formData.password}
                 onChange={handleChange}
                 className={`mt-1 block w-full rounded-md border ${

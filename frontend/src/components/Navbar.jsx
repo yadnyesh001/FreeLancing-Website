@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    navigate('/');
+    // Add your logout logic here (clear tokens, etc.)
+  };
 
   return (
     <nav className="backdrop-blur-md bg-white/30 border-b border-white/10 sticky top-0 z-50">
@@ -22,18 +30,37 @@ const Navbar = () => {
             >
               Home
             </Link>
-            <Link 
-              to="/login" 
-              className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
-            >
-              Login
-            </Link>
-            <Link 
-              to="/signup" 
-              className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
-            >
-              Signup
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link 
+                  to="/dashboard" 
+                  className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/login" 
+                  className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                >
+                  Signup
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -59,20 +86,43 @@ const Navbar = () => {
             >
               Home
             </Link>
-            <Link 
-              to="/login" 
-              className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Login
-            </Link>
-            <Link 
-              to="/signup" 
-              className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Signup
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link 
+                  to="/dashboard" 
+                  className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/login" 
+                  className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Signup
+                </Link>
+              </>
+            )}
           </div>
         )}
       </div>

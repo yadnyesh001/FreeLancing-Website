@@ -41,3 +41,29 @@ export const getFreelancers = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export const getClients = async (req, res) => {
+  try {
+    const users = await User.find({ role: 'client' });
+    res.status(200).json(users);
+
+  } catch (error) {
+    console.log('Error in getClients: ', error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    res.status(200).json({ success: true, message: "User deleted successfully" });
+
+  } catch (error) {
+    console.log('Error in deleteUser: ', error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

@@ -70,7 +70,13 @@ const Login = () => {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        navigate("/dashboard");
+
+        // Check the user's role and navigate accordingly
+        if (data.user.role === "admin") {
+          navigate("/admindashboard");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         setErrors({
           submit: data.message || "Invalid credentials. Please try again."
