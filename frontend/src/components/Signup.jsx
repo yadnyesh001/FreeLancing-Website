@@ -1,56 +1,56 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const SignUp = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: ''
+    name: "",
+    email: "",
+    password: "",
+    role: "",
   });
 
   const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState('');
+  const [serverError, setServerError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = "Name is required";
     }
-    
+
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = "Email is invalid";
     }
-    
+
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = "Password must be at least 6 characters";
     }
 
     if (!formData.role) {
-      newErrors.role = 'Please select a role';
+      newErrors.role = "Please select a role";
     }
 
     return newErrors;
@@ -59,24 +59,29 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
-    
+
     if (Object.keys(newErrors).length === 0) {
       try {
-        const response = await axios.post('http://localhost:3000/api/v1/auth/signup', formData, {
-          headers: {
-            'Content-Type': 'application/json'
+        const response = await axios.post(
+          "http://localhost:3000/api/v1/auth/signup",
+          formData,
+          {
+            withCredentials: true,
           }
-        });
-        
-        console.log('Form submitted:', response.data);
+        );
+
+        console.log("Form submitted:", response.data);
         // Navigate to login or dashboard after successful signup
-        navigate('/login');
+        navigate("/login");
       } catch (error) {
-        console.error('Error during signup:', error);
+        console.error("Error during signup:", error);
         if (error.response) {
-          setServerError(error.response.data.message || 'Something went wrong. Please try again.');
+          setServerError(
+            error.response.data.message ||
+              "Something went wrong. Please try again."
+          );
         } else {
-          setServerError('Network error. Please check your connection.');
+          setServerError("Network error. Please check your connection.");
         }
       }
     } else {
@@ -92,21 +97,27 @@ const SignUp = () => {
             Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
               Sign in
             </Link>
           </p>
         </div>
-        
+
         {serverError && (
           <p className="text-red-500 text-center text-sm">{serverError}</p>
         )}
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Name
               </label>
               <input
@@ -116,7 +127,7 @@ const SignUp = () => {
                 value={formData.name}
                 onChange={handleChange}
                 className={`mt-1 block w-full rounded-md border ${
-                  errors.name ? 'border-red-500' : 'border-gray-300'
+                  errors.name ? "border-red-500" : "border-gray-300"
                 } shadow-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
               />
               {errors.name && (
@@ -125,7 +136,10 @@ const SignUp = () => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <input
@@ -135,7 +149,7 @@ const SignUp = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className={`mt-1 block w-full rounded-md border ${
-                  errors.email ? 'border-red-500' : 'border-gray-300'
+                  errors.email ? "border-red-500" : "border-gray-300"
                 } shadow-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
               />
               {errors.email && (
@@ -144,7 +158,10 @@ const SignUp = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <input
@@ -154,7 +171,7 @@ const SignUp = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className={`mt-1 block w-full rounded-md border ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
+                  errors.password ? "border-red-500" : "border-gray-300"
                 } shadow-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
               />
               {errors.password && (
@@ -163,7 +180,10 @@ const SignUp = () => {
             </div>
 
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="role"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Role
               </label>
               <select
@@ -172,7 +192,7 @@ const SignUp = () => {
                 value={formData.role}
                 onChange={handleChange}
                 className={`mt-1 block w-full rounded-md border ${
-                  errors.role ? 'border-red-500' : 'border-gray-300'
+                  errors.role ? "border-red-500" : "border-gray-300"
                 } shadow-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
               >
                 <option value="">Select Role</option>

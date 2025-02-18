@@ -91,6 +91,7 @@ export const login = async (req, res) => {
         createdAt: user.createdAt,
       }
     });
+    console.log("token:" ,token)
 
   } catch (error) {
     console.log("Error in login: ", error.message);

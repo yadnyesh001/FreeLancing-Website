@@ -1,27 +1,28 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const navigate = useNavigate();
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     // Email validation
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
-    
+
     // Password validation
     if (!formData.password) {
       newErrors.password = "Password is required";
@@ -35,15 +36,15 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ""
+        [name]: "",
       }));
     }
   };
@@ -58,33 +59,36 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:3000/api/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/auth/login",
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
 
-      const data = await response.json();
+      // Destructure the data from the response
+      const { user, success } = response.data;
 
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
+      if (success) {
+        setErrors({});
 
         // Check the user's role and navigate accordingly
-        if (data.user.role === "admin") {
+        if (user.role === "admin") {
           navigate("/admindashboard");
         } else {
           navigate("/dashboard");
         }
       } else {
         setErrors({
-          submit: data.message || "Invalid credentials. Please try again."
+          submit: response.data.message || "Invalid credentials. Please try again.",
         });
       }
     } catch (error) {
+      console.log(error);
+
       setErrors({
-        submit: "Network error. Please check your connection and try again."
+        submit: "Network error. Please check your connection and try again.",
       });
     } finally {
       setLoading(false);
@@ -94,8 +98,8 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-6">
-        <form 
-          onSubmit={handleSubmit} 
+        <form
+          onSubmit={handleSubmit}
           className="bg-white rounded-lg shadow-lg p-8"
           noValidate
         >
@@ -104,13 +108,19 @@ const Login = () => {
           </h1>
 
           {errors.submit && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md" role="alert">
+            <div
+              className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md"
+              role="alert"
+            >
               {errors.submit}
             </div>
           )}
 
           <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Email Address
             </label>
             <input
@@ -120,7 +130,7 @@ const Login = () => {
               value={formData.email}
               onChange={handleChange}
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
+                errors.email ? "border-red-500" : "border-gray-300"
               }`}
               aria-invalid={errors.email ? "true" : "false"}
               aria-describedby={errors.email ? "email-error" : undefined}
@@ -134,7 +144,10 @@ const Login = () => {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Password
             </label>
             <div className="relative">
@@ -145,10 +158,12 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
+                  errors.password ? "border-red-500" : "border-gray-300"
                 }`}
                 aria-invalid={errors.password ? "true" : "false"}
-                aria-describedby={errors.password ? "password-error" : undefined}
+                aria-describedby={
+                  errors.password ? "password-error" : undefined
+                }
                 disabled={loading}
               />
               <button
@@ -169,23 +184,14 @@ const Login = () => {
           <button
             type="submit"
             className={`w-full py-2 px-4 rounded-md text-white font-medium transition-colors cursor-pointer
-              ${loading 
-                ? 'bg-blue-400 cursor-not-allowed' 
-                : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+              ${
+                loading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               }`}
             disabled={loading}
           >
-            {loading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Signing in...
-              </span>
-            ) : (
-              "Sign in"
-            )}
+            {loading ? "Signing in..." : "Sign in"}
           </button>
 
           <div className="mt-4 text-center text-sm text-gray-600">
