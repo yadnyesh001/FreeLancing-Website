@@ -2,36 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import axios from 'axios'; // Missing import
-import Cookies from 'js-cookie';
+import { useAuthStore } from '../store/auth'; // Missing import
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const {isLoggedIn, logout} = useAuthStore();
   const navigate = useNavigate();
-
   // Check for the cookie on component mount
-  useEffect(() => {
-    const token = Cookies.get('jwt-freelancing'); // Get token from cookies
-
-    if (token) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, []);
 
   const handleLogout = async () => {
     try {
       // Make a request to the backend logout route
-      await axios.get('http://localhost:3000/api/v1/auth/logout', {
+      await axios.post('http://localhost:3000/api/v1/auth/logout', {
         withCredentials: true, // Send cookies with the request
       });
 
-      // Clear the cookie on the frontend
-      Cookies.remove('jwt-freelancing');
-      
-      // Update state and navigate to the homepage
-      setIsLoggedIn(false);
+      logout();
       navigate('/');
     } catch (error) {
       console.error('Error during logout:', error.message);

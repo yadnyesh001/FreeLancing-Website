@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {useAuthStore} from '../store/auth';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +11,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+  const {login}= useAuthStore();
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -68,11 +69,12 @@ const Login = () => {
       );
 
       // Destructure the data from the response
-      const { user, success } = response.data;
+      const { user, success,token } = response.data;
 
       if (success) {
         setErrors({});
-
+        // localStorage.setItem("freelance_token", token);
+        login(token);
         // Check the user's role and navigate accordingly
         if (user.role === "admin") {
           navigate("/admindashboard");

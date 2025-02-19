@@ -6,10 +6,11 @@ import userRoutes from './routes/user.route.js';
 import projectRoutes from './routes/project.route.js';
 import proposalRoutes from './routes/proposal.route.js';
 import cors from 'cors';
-
+import morgan from "morgan";
 dotenv.config();
 
 const app = express();
+app.use(morgan("dev"));
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
