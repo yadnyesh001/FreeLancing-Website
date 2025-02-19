@@ -5,8 +5,6 @@ const AdminDashboard = () => {
   const [clients, setClients] = useState([]);
   const [freelancers, setFreelancers] = useState([]);
   const [earnings, setEarnings] = useState(0);
-  const [editClient, setEditClient] = useState(null);
-  const [editFreelancer, setEditFreelancer] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -29,20 +27,6 @@ const AdminDashboard = () => {
     fetchData('earnings', setEarnings, 'Error fetching earnings');
   }, []);
 
-  const handleUpdate = async (id, type, data, setter) => {
-    try {
-      await fetch(`http://localhost:3000/api/v1/${type}/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      setter(null);
-      fetchData(type, type === 'clients' ? setClients : setFreelancers);
-    } catch (error) {
-      setError(`Error updating ${type}`);
-    }
-  };
-
   const handleDelete = async (id, type) => {
     try {
       await fetch(`http://localhost:3000/api/v1/users/${id}`, {
@@ -64,53 +48,23 @@ const AdminDashboard = () => {
     </div>
   );
 
-  const UserList = ({ users, type, editState, setEditState, onUpdate, onDelete }) => (
+  const UserList = ({ users, type, onDelete }) => (
     <div className="grid gap-4">
       {users.map((user) => (
         <div 
           key={user._id} 
-          className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+          className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex justify-between items-center"
         >
-          {editState && editState._id === user._id ? (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={editState.name}
-                onChange={(e) => setEditState({ ...editState, name: e.target.value })}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button 
-                onClick={() => onUpdate(user._id)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-              >
-                Save
-              </button>
-              <button 
-                onClick={() => setEditState(null)}
-                className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <span className="text-gray-800">{user.name}</span>
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => setEditState(user)}
-                  className="px-4 py-2 bg-amber-100 text-amber-600 rounded-md hover:bg-amber-200 transition-colors"
-                >
-                  Edit
-                </button>
-                <button 
-                  onClick={() => onDelete(user._id)}
-                  className="px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          )}
+          <div className="flex flex-col">
+            <span className="text-gray-800 font-semibold text-lg">{user.name}</span>
+            <span className="text-gray-500 text-sm">{user.email}</span>
+          </div>
+          <button 
+            onClick={() => onDelete(user._id)}
+            className="px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors"
+          >
+            Delete
+          </button>
         </div>
       ))}
     </div>
@@ -184,9 +138,6 @@ const AdminDashboard = () => {
                   <UserList 
                     users={clients}
                     type="clients"
-                    editState={editClient}
-                    setEditState={setEditClient}
-                    onUpdate={(id) => handleUpdate(id, 'clients', editClient, setEditClient)}
                     onDelete={(id) => handleDelete(id, 'clients')}
                   />
                 </div>
@@ -198,9 +149,6 @@ const AdminDashboard = () => {
                   <UserList 
                     users={freelancers}
                     type="freelancers"
-                    editState={editFreelancer}
-                    setEditState={setEditFreelancer}
-                    onUpdate={(id) => handleUpdate(id, 'freelancers', editFreelancer, setEditFreelancer)}
                     onDelete={(id) => handleDelete(id, 'freelancers')}
                   />
                 </div>

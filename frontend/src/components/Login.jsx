@@ -77,7 +77,7 @@ const Login = () => {
         if (user.role === "admin") {
           navigate("/admindashboard");
         } else {
-          navigate("/dashboard");
+          navigate("/");
         }
       } else {
         setErrors({
