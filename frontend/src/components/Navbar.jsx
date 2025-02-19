@@ -1,22 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import axios from 'axios'; // Missing import
-import { useAuthStore } from '../store/auth'; // Missing import
+import axios from 'axios';
+import { useAuthStore } from '../store/auth.js';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const {isLoggedIn, logout} = useAuthStore();
+  const { isLoggedIn, logout } = useAuthStore();
   const navigate = useNavigate();
-  // Check for the cookie on component mount
 
   const handleLogout = async () => {
     try {
-      // Make a request to the backend logout route
       await axios.post('http://localhost:3000/api/v1/auth/logout', {
-        withCredentials: true, // Send cookies with the request
+        withCredentials: true,
       });
-
       logout();
       navigate('/');
     } catch (error) {
@@ -35,16 +32,22 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-6 text-lg">
-            <Link 
-              to="/" 
+            <Link
+              to="/find-work"
               className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
             >
-              Home
+              Find Work
             </Link>
-            {isLoggedIn ? ( // Show Dashboard and Logout if logged in
+            <Link
+              to="/find-talent"
+              className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
+            >
+              Find Talent
+            </Link>
+            {isLoggedIn ? (
               <>
-                <Link 
-                  to="/dashboard" 
+                <Link
+                  to="/dashboard"
                   className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
                 >
                   Dashboard
@@ -56,16 +59,16 @@ const Navbar = () => {
                   Logout
                 </button>
               </>
-            ) : ( // Show Login and Signup if not logged in
+            ) : (
               <>
-                <Link 
-                  to="/login" 
+                <Link
+                  to="/login"
                   className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
                 >
                   Login
                 </Link>
-                <Link 
-                  to="/signup" 
+                <Link
+                  to="/signup"
                   className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
                 >
                   Signup
@@ -79,28 +82,31 @@ const Navbar = () => {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden text-gray-900 text-3xl"
           >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white/30 backdrop-blur-md p-4 space-y-4">
-            <Link 
-              to="/" 
+            <Link
+              to="/find-work"
               className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Home
+              Find Work
             </Link>
-            {isLoggedIn ? ( // Show Dashboard and Logout if logged in
+            <Link
+              to="/find-talent"
+              className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Find Talent
+            </Link>
+            {isLoggedIn ? (
               <>
-                <Link 
-                  to="/dashboard" 
+                <Link
+                  to="/dashboard"
                   className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -116,17 +122,17 @@ const Navbar = () => {
                   Logout
                 </button>
               </>
-            ) : ( // Show Login and Signup if not logged in
+            ) : (
               <>
-                <Link 
-                  to="/login" 
+                <Link
+                  to="/login"
                   className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Login
                 </Link>
-                <Link 
-                  to="/signup" 
+                <Link
+                  to="/signup"
                   className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
