@@ -74,7 +74,7 @@ const Login = () => {
       if (success) {
         setErrors({});
         // localStorage.setItem("freelance_token", token);
-        login(token);
+        login(token,user);
         // Check the user's role and navigate accordingly
         if (user.role === "admin") {
           navigate("/admindashboard");

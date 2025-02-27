@@ -17,7 +17,7 @@ const FindWork = () => {
         const response = await axios.get("http://localhost:3000/api/v1/projects");
 
         if (response.data && Array.isArray(response.data.projects)) {
-          setProjects(response.data.projects);
+          setProjects(response.data.projects); 
         } else {
           console.error("Unexpected API response format:", response.data);
           setProjects([]);

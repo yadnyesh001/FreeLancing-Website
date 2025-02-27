@@ -6,7 +6,7 @@ import { useAuthStore } from '../store/auth.js';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuthStore();
+  const { isLoggedIn, logout, user } = useAuthStore();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -26,51 +26,54 @@ const Navbar = () => {
       <div className="container mx-auto p-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-semibold text-gray-900 drop-shadow-lg">
+          <Link
+            to={user?.role === 'admin' ? '/admindashboard' : '/'}
+            className="text-2xl font-semibold text-gray-900 drop-shadow-lg"
+          >
             Freelancing Hub
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-6 text-lg">
-            <Link
-              to="/find-work"
-              className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
-            >
-              Find Work
-            </Link>
-            <Link
-              to="/find-talent"
-              className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
-            >
-              Find Talent
-            </Link>
             {isLoggedIn ? (
-              <>
-                <Link
-                  to="/dashboard"
-                  className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
-                >
-                  Dashboard
-                </Link>
+              user?.role === 'admin' ? (
                 <button
                   onClick={handleLogout}
                   className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
                 >
                   Logout
                 </button>
-              </>
+              ) : (
+                <>
+                  <Link to="/find-work" className="text-gray-900 hover:text-gray-600 transition-colors duration-300">
+                    Find Work
+                  </Link>
+                  <Link to="/find-talent" className="text-gray-900 hover:text-gray-600 transition-colors duration-300">
+                    Find Talent
+                  </Link>
+                  <Link to="/dashboard" className="text-gray-900 hover:text-gray-600 transition-colors duration-300">
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                  >
+                    Logout
+                  </button>
+                </>
+              )
             ) : (
               <>
-                <Link
-                  to="/login"
-                  className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
-                >
+               <Link to="/find-work" className="text-gray-900 hover:text-gray-600 transition-colors duration-300">
+                    Find Work
+                  </Link>
+                  <Link to="/find-talent" className="text-gray-900 hover:text-gray-600 transition-colors duration-300">
+                    Find Talent
+                  </Link>
+                <Link to="/login" className="text-gray-900 hover:text-gray-600 transition-colors duration-300">
                   Login
                 </Link>
-                <Link
-                  to="/signup"
-                  className="text-gray-900 hover:text-gray-600 transition-colors duration-300"
-                >
+                <Link to="/signup" className="text-gray-900 hover:text-gray-600 transition-colors duration-300">
                   Signup
                 </Link>
               </>
@@ -89,29 +92,8 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white/30 backdrop-blur-md p-4 space-y-4">
-            <Link
-              to="/find-work"
-              className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Find Work
-            </Link>
-            <Link
-              to="/find-talent"
-              className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Find Talent
-            </Link>
             {isLoggedIn ? (
-              <>
-                <Link
-                  to="/dashboard"
-                  className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
+              user?.role === 'admin' ? (
                 <button
                   onClick={() => {
                     handleLogout();
@@ -121,9 +103,56 @@ const Navbar = () => {
                 >
                   Logout
                 </button>
-              </>
+              ) : (
+                <>
+                  <Link
+                    to="/find-work"
+                    className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Find Work
+                  </Link>
+                  <Link
+                    to="/find-talent"
+                    className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Find Talent
+                  </Link>
+                  <Link
+                    to="/dashboard"
+                    className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                  >
+                    Logout
+                  </button>
+                </>
+              )
             ) : (
               <>
+                  <Link
+                    to="/find-work"
+                    className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Find Work
+                  </Link>
+                  <Link
+                    to="/find-talent"
+                    className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Find Talent
+                  </Link>
                 <Link
                   to="/login"
                   className="block text-gray-900 hover:text-gray-600 transition-colors duration-300"

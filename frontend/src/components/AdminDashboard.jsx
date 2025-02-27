@@ -31,7 +31,7 @@ const AdminDashboard = () => {
     try {
       await fetch(`http://localhost:3000/api/v1/users/${id}`, {
         method: 'DELETE'
-      });
+      }); 
       fetchData(type, type === 'clients' ? setClients : setFreelancers);
     } catch (error) {
       setError(`Error deleting ${type}`);

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Mail, ExternalLink, Star } from 'lucide-react';
+import axios from 'axios';
 
 const FindTalent = () => {
   const [freelancers, setFreelancers] = useState([]);
@@ -21,12 +22,11 @@ const FindTalent = () => {
   useEffect(() => {
     const fetchFreelancers = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/v1/freelancers');
-        const data = await response.json();
-        setFreelancers(data);
-        setIsLoading(false);
+        const response = await axios.get("http://localhost:3000/api/v1/freelancers");
+        setFreelancers(response.data);
       } catch (error) {
-        console.error('Error fetching freelancers:', error);
+        console.error("Error fetching freelancers:", error);
+      } finally {
         setIsLoading(false);
       }
     };
@@ -134,4 +134,4 @@ const FindTalent = () => {
   );
 };
 
-export default FindTalent;
+export default FindTalent; 

@@ -2,12 +2,15 @@ import { create } from 'zustand';
 
 export const useAuthStore = create((set) => ({
   isLoggedIn: localStorage.getItem('freelance_token') ? true : false,
-  login: (token) => {
+  user: JSON.parse(localStorage.getItem('user')) || {},
+  login: (token,user) => {
     localStorage.setItem('freelance_token', token);
-    set({ isLoggedIn: true });
+    localStorage.setItem('user', JSON.stringify(user));
+    set({ isLoggedIn: true,user:user });
   },
   logout: () => {
     localStorage.removeItem('freelance_token');
-    set({ isLoggedIn: false });
+    localStorage.removeItem('user');
+    set({ isLoggedIn: false,user:{} });
   }
 }));
