@@ -8,6 +8,8 @@ import Home from './components/Home.jsx';
 import Footer from './components/Footer.jsx';
 import FindWork from './components/FindWork.jsx';
 import FindTalent from './components/FindTalent.jsx';
+import FreelancerDashboard from './components/FreelancerDashboard.jsx';
+import ClientDashboard from './components/ClientDashboard.jsx';
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admindashboard" element={<AdminDashboard />} />
+          <Route path="/freelancerdashboard" element={<FreelancerDashboard />} />
+          <Route path="/clientdashboard" element={<ClientDashboard />} />
           <Route path="/find-work" element={<FindWork />} />
           <Route path="/find-talent" element={<FindTalent />} />
         </Routes>
