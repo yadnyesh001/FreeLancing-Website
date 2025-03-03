@@ -1,7 +1,7 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from '../store/auth';
+import { useAuthStore } from '../store/useAuthStore.js';
+import { axiosInstance } from '../lib/axios.js';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -35,14 +35,14 @@ const Login = () => {
 
     setLoading(true);
 
-    // Set timeout promise (2 seconds)
+    // Set timeout promise (3 seconds)
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error("timeout")), 2000)
+      setTimeout(() => reject(new Error("timeout")), 3000)
     );
 
     try {
       const response = await Promise.race([
-        axios.post("http://localhost:3000/api/v1/auth/login", formData, { withCredentials: true }),
+        axiosInstance.post("auth/login", formData, { withCredentials: true }),
         timeoutPromise
       ]);
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { axiosInstance } from '../lib/axios';
 import { Clock, Calendar, DollarSign, Briefcase, BarChart2, Bell, MessageSquare } from 'lucide-react';
 
 const FreelancerDashboard = ({ 
@@ -31,7 +31,7 @@ const FreelancerDashboard = ({
     const fetchUserData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:3000/api/v1/users/${userId}`);
+        const response = await axiosInstance.get(`users/${userId}`);
         console.log("User data:", response.data);
 
         setUserName(response.data.name || "");

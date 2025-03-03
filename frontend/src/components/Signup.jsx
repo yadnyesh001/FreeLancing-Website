@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { axiosInstance } from '../lib/axios';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -62,8 +62,8 @@ const SignUp = () => {
 
     if (Object.keys(newErrors).length === 0) {
       try {
-        const response = await axios.post(
-          "http://localhost:3000/api/v1/auth/signup",
+        const response = await axiosInstance.post(
+          "auth/signup",
           formData,
           {
             withCredentials: true,
