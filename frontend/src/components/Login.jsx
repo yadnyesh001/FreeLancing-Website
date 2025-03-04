@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from '../store/useAuthStore.js';
 import { axiosInstance } from '../lib/axios.js';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -35,7 +36,6 @@ const Login = () => {
 
     setLoading(true);
 
-    // Set timeout promise (3 seconds)
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error("timeout")), 3000)
     );
@@ -51,10 +51,8 @@ const Login = () => {
         setErrors({});
         login(token, user);
         
-        // Store success state in localStorage instead of sessionStorage
         localStorage.setItem('loginSuccess', 'true');
         
-        // Navigate based on user role
         let dashboardRoute;
         switch (user.role) {
           case "admin":
@@ -137,10 +135,10 @@ const Login = () => {
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm cursor-pointer"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm cursor-pointer hover:cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}

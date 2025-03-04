@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { axiosInstance } from '../lib/axios';
 
 const AdminDashboard = () => {
   const [selectedSection, setSelectedSection] = useState('earnings');
@@ -12,15 +13,14 @@ const AdminDashboard = () => {
   const fetchData = async (endpoint, setter, errorMessage) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:3000/api/v1/${endpoint}`);
-      const data = await response.json();
-      setter(endpoint === 'earnings' ? data.totalEarnings : data);
+      const response = await axiosInstance.get(`/${endpoint}`);
+      setter(endpoint === 'earnings' ? response.data.totalEarnings : response.data);
     } catch (error) {
       setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   useEffect(() => {
     // Check for successful login immediately on component mount
@@ -47,14 +47,13 @@ const AdminDashboard = () => {
 
   const handleDelete = async (id, type) => {
     try {
-      await fetch(`http://localhost:3000/api/v1/users/${id}`, {
-        method: 'DELETE'
-      }); 
+      await axiosInstance.delete(`/users/${id}`);
       fetchData(type, type === 'clients' ? setClients : setFreelancers);
     } catch (error) {
       setError(`Error deleting ${type}`);
     }
   };
+  
 
   const StatCard = ({ title, value, icon }) => (
     <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
