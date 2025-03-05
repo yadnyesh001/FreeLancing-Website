@@ -7,7 +7,6 @@ import {
 
 const Home = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
-  const [activeTab, setActiveTab] = useState('all');
 
   useEffect(() => {
     const handleScroll = () => {

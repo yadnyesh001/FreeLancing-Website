@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
+import { axiosInstance } from '../lib/axios';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -11,9 +11,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3000/api/v1/auth/logout', {
-        withCredentials: true,
-      });
+      await axiosInstance.post('/auth/logout');
       logout();
       navigate('/');
     } catch (error) {
@@ -21,26 +19,42 @@ const Navbar = () => {
     }
   };
 
+  // Function to get the correct dashboard path based on user role
+  const getDashboardPath = () => {
+    if (!isLoggedIn) return '/';
+    
+    switch (user?.role) {
+      case 'admin':
+        return '/admindashboard';
+      case 'freelancer':
+        return '/freelancerdashboard';
+      case 'client':
+        return '/clientdashboard';
+      default:
+        return '/';
+    }
+  };
+
   return (
     <nav className="backdrop-blur-md bg-white/30 border-b border-white/10 sticky top-0 z-50 w-full overflow-hidden">
       <div className="max-w-screen-xl mx-auto px-6 py-4">
         <div className="grid grid-cols-12 items-center">
-          {/* Logo - Fixed in the first 3 columns */}
+          {/* Logo - Now directs to appropriate dashboard when logged in */}
           <div className="col-span-3">
-            <Link to="/" className="text-2xl font-semibold text-gray-900 drop-shadow-lg cursor-pointer block">
+            <Link 
+              to={getDashboardPath()} 
+              className="text-2xl font-semibold text-gray-900 drop-shadow-lg cursor-pointer block"
+            >
               Freelancing Hub
             </Link>
           </div>
 
-          {/* Desktop Navigation - Takes remaining 9 columns */}
+          {/* Rest of the navbar remains the same */}
           <div className="col-span-9 hidden md:block">
             <div className="flex justify-end space-x-8 text-lg">
               {isLoggedIn ? (
                 user?.role === 'admin' ? (
                   <>
-                    <Link to="/admindashboard" className="text-gray-900 hover:text-gray-600 transition-colors duration-300 whitespace-nowrap">
-                      Dashboard
-                    </Link>
                     <button
                       onClick={handleLogout}
                       className="text-gray-900 hover:text-gray-600 transition-colors duration-300 cursor-pointer whitespace-nowrap"
@@ -50,12 +64,6 @@ const Navbar = () => {
                   </>
                 ) : user?.role === 'freelancer' ? (
                   <>
-                    <Link to="/freelancerdashboard" className="text-gray-900 hover:text-gray-600 transition-colors duration-300 whitespace-nowrap">
-                      Dashboard
-                    </Link>
-                    <Link to="/find-work" className="text-gray-900 hover:text-gray-600 transition-colors duration-300 whitespace-nowrap">
-                      Find Work
-                    </Link>
                     <button
                       onClick={handleLogout}
                       className="text-gray-900 hover:text-gray-600 transition-colors duration-300 cursor-pointer whitespace-nowrap"
@@ -65,9 +73,6 @@ const Navbar = () => {
                   </>
                 ) : (
                   <>
-                    <Link to="/clientdashboard" className="text-gray-900 hover:text-gray-600 transition-colors duration-300 whitespace-nowrap">
-                      Dashboard
-                    </Link>
                     <Link to="/find-talent" className="text-gray-900 hover:text-gray-600 transition-colors duration-300 whitespace-nowrap">
                       Find Talent
                     </Link>

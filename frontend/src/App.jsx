@@ -11,6 +11,7 @@ import FindTalent from "./components/FindTalent.jsx";
 import FreelancerDashboard from "./components/FreelancerDashboard.jsx";
 import ClientDashboard from "./components/ClientDashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import UpdateProfile from "./components/UpdateProfile.jsx";
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
 
           {/* Secure Dashboard Routes */}
           <Route
-            path="/admindashboard"
+            path="/admindashboard" 
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <AdminDashboard />
@@ -50,6 +51,7 @@ function App() {
 
           <Route path="/find-work" element={<FindWork />} />
           <Route path="/find-talent" element={<FindTalent />} />
+          <Route path="/update-profile" element={<UpdateProfile/>} />
         </Routes>
       </main>
       <Footer />

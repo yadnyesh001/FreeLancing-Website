@@ -2,7 +2,6 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  // Get user data from localStorage or a global state
   const user = JSON.parse(localStorage.getItem("user"));
 
   if (!user) {

@@ -14,22 +14,63 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id , req.body, { new: true });
+    const userId = req.params.id;
+    const updateData = req.body;
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+    // Ensure user can only update their own profile
+    if (req.user._id.toString() !== userId) {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Unauthorized to update this profile" 
+      });
     }
+
+    // Find user and validate
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "User not found" 
+      });
+    }
+
+    // Use method to update profile
+    const updatedUser = await user.updateProfile(updateData);
+
     res.status(200).json({ 
       success: true, 
       message: "Profile updated successfully", 
-      user 
+      user: {
+        // Exclude sensitive fields
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        profileImage: updatedUser.profileImage,
+        skills: updatedUser.skills,
+        bio: updatedUser.bio
+      }
     });
 
   } catch (error) {
-    console.log('Error in updateProfile: ', error.message);
-    res.status(500).json({ message: "Internal server error" });
-  } 
-}
+    console.error('Profile update error:', error);
+
+    // Handle specific Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: Object.values(error.errors)
+          .map(err => err.message)
+          .join(', ')
+      });
+    }
+
+    res.status(500).json({ 
+      success: false,
+      message: "Internal server error" 
+    });
+  }
+};
 
 export const getFreelancers = async (req, res) => {
   try {

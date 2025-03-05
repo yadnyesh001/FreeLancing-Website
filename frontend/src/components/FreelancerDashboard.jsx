@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { axiosInstance } from '../lib/axios';
-import { Clock, Calendar, DollarSign, Briefcase, BarChart2, Bell, MessageSquare } from 'lucide-react';
+import { Clock, Calendar, DollarSign, Briefcase, BarChart2, Bell, MessageSquare, User } from 'lucide-react';
 
 const FreelancerDashboard = ({ 
   stats = [],
@@ -8,12 +9,27 @@ const FreelancerDashboard = ({
   notifications = [],
   upcomingDeadlines = []
 }) => {
+  const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const loginSuccess = localStorage.getItem('loginSuccess');
+    if (loginSuccess === 'true') {
+      // Remove the flag immediately to prevent showing on refresh
+      localStorage.removeItem('loginSuccess');
+      
+      // Show notification immediately
+      setShowSuccessNotification(true);
+      
+      // Hide notification after 3 seconds
+      setTimeout(() => {
+        setShowSuccessNotification(false);
+      }, 2000);
+    }
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
@@ -62,11 +78,28 @@ const FreelancerDashboard = ({
   // Use provided stats or defaults
   const displayStats = stats.length ? stats : defaultStats;
 
-  // Instead of showing a loading screen, just display the dashboard with a placeholder name
-  // that will be updated when the data loads
+  // Handle navigation to find work and update profile
+  const handleFindWork = () => {
+    navigate('/find-work');
+  };
+
+  const handleUpdateProfile = () => {
+    navigate('/update-profile');
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Main content */}
+      {showSuccessNotification && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-md z-50" role="alert">
+          <div className="flex items-center">
+            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+            </svg>
+            <span className="font-medium">Successfully logged in!</span>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto px-4 py-8">
         {/* Welcome message */}
         <div className="flex justify-between items-center mb-8">
@@ -77,11 +110,24 @@ const FreelancerDashboard = ({
             </h1>
             <p className="text-gray-600">Here's what's happening with your projects today.</p>
           </div>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700">
-            Find New Projects
-          </button>
+          <div className="flex space-x-4">
+            <button 
+              onClick={handleUpdateProfile}
+              className="bg-gray-600 text-white px-4 py-2 rounded font-medium hover:bg-gray-700 flex items-center cursor-pointer"
+            >
+              <User className="mr-2" size={16} /> 
+              Update Profile
+            </button>
+            <button 
+              onClick={handleFindWork}
+              className="bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700 cursor-pointer"
+            >
+              Find New Projects
+            </button>
+          </div>
         </div>
 
+        {/* Rest of the component remains the same */}
         {/* Stats overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {displayStats.map((stat, index) => (
@@ -99,6 +145,7 @@ const FreelancerDashboard = ({
           ))}
         </div>
 
+        {/* Rest of the dashboard code remains unchanged */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Active projects */}
           <div className="lg:col-span-2">
