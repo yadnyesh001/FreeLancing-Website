@@ -6,7 +6,7 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
     role: "",
@@ -33,8 +33,8 @@ const SignUp = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
     }
 
     if (!formData.email.trim()) {
@@ -62,11 +62,17 @@ const SignUp = () => {
 
     if (Object.keys(newErrors).length === 0) {
       try {
+        // Log the data being sent for debugging
+        console.log("Sending data to server:", formData);
+        
         const response = await axiosInstance.post(
-          "auth/signup",
+          "/auth/signup", // Add leading slash if your base URL requires it
           formData,
           {
             withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json'
+            }
           }
         );
 
@@ -76,6 +82,7 @@ const SignUp = () => {
       } catch (error) {
         console.error("Error during signup:", error);
         if (error.response) {
+          console.log("Server response data:", error.response.data);
           setServerError(
             error.response.data.message ||
               "Something went wrong. Please try again."
@@ -88,6 +95,9 @@ const SignUp = () => {
       setErrors(newErrors);
     }
   };
+
+  // Debug what's in the form state
+  console.log("Current form state:", formData);
 
   return (
     <div className="min-h-screen flex items-start pt-20 justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
@@ -115,23 +125,23 @@ const SignUp = () => {
           <div className="space-y-4">
             <div>
               <label
-                htmlFor="name"
+                htmlFor="username"
                 className="block text-sm font-medium text-gray-700"
               >
-                Name
+                Username
               </label>
               <input
-                id="name"
-                name="name"
+                id="username"
+                name="username"
                 type="text"
-                value={formData.name}
+                value={formData.username}
                 onChange={handleChange}
                 className={`mt-1 block w-full rounded-md border ${
-                  errors.name ? "border-red-500" : "border-gray-300"
+                  errors.username ? "border-red-500" : "border-gray-300"
                 } shadow-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
               />
-              {errors.name && (
-                <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-500">{errors.username}</p>
               )}
             </div>
 

@@ -99,7 +99,7 @@ const AdminDashboard = () => {
           className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex justify-between items-center"
         >
           <div className="flex flex-col">
-            <span className="text-gray-800 font-semibold text-lg">{user.name}</span>
+            <span className="text-gray-800 font-semibold text-lg">{user.username}</span>
             <span className="text-gray-500 text-sm">{user.email}</span>
           </div>
           <button 

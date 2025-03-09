@@ -1,6 +1,5 @@
 import User from '../models/user.model.js';
 
-
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -34,6 +33,17 @@ export const updateProfile = async (req, res) => {
       });
     }
 
+    // Check username uniqueness if changing username
+    if (updateData.username && updateData.username !== user.username) {
+      const existingUsername = await User.findOne({ username: updateData.username });
+      if (existingUsername) {
+        return res.status(400).json({
+          success: false,
+          message: "Username already exists"
+        });
+      }
+    }
+
     // Use method to update profile
     const updatedUser = await user.updateProfile(updateData);
 
@@ -43,7 +53,7 @@ export const updateProfile = async (req, res) => {
       user: {
         // Exclude sensitive fields
         _id: updatedUser._id,
-        name: updatedUser.name,
+        username: updatedUser.username,
         email: updatedUser.email,
         role: updatedUser.role,
         profileImage: updatedUser.profileImage,

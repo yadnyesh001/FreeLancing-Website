@@ -50,7 +50,7 @@ const FreelancerDashboard = ({
         const response = await axiosInstance.get(`users/${userId}`);
         console.log("User data:", response.data);
 
-        setUserName(response.data.name || "");
+        setUserName(response.data.username || "");
         setLoading(false);
       } catch (err) {
         console.error("Error fetching user data:", err);

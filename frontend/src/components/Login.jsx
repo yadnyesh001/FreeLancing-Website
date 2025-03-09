@@ -5,7 +5,7 @@ import { axiosInstance } from '../lib/axios.js';
 import { Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ loginIdentifier: "", password: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -14,9 +14,8 @@ const Login = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.email) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Please enter a valid email address";
-
+    if (!formData.loginIdentifier) newErrors.loginIdentifier = "Email or username is required";
+    
     if (!formData.password) newErrors.password = "Password is required";
     else if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters";
 
@@ -40,9 +39,23 @@ const Login = () => {
       setTimeout(() => reject(new Error("timeout")), 3000)
     );
 
+    // Determine if the input is an email or username
+    const isEmail = /\S+@\S+\.\S+/.test(formData.loginIdentifier);
+    
+    // Create appropriate request payload
+    const loginData = {
+      password: formData.password
+    };
+    
+    if (isEmail) {
+      loginData.email = formData.loginIdentifier;
+    } else {
+      loginData.username = formData.loginIdentifier;
+    }
+
     try {
       const response = await Promise.race([
-        axiosInstance.post("auth/login", formData, { withCredentials: true }),
+        axiosInstance.post("auth/login", loginData, { withCredentials: true }),
         timeoutPromise
       ]);
 
@@ -100,21 +113,21 @@ const Login = () => {
           )}
 
           <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
+            <label htmlFor="loginIdentifier" className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address or Username
             </label>
             <input
-              id="email"
-              type="email"
-              name="email"
-              value={formData.email}
+              id="loginIdentifier"
+              type="text"
+              name="loginIdentifier"
+              value={formData.loginIdentifier}
               onChange={handleChange}
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.email ? "border-red-500" : "border-gray-300"
+                errors.loginIdentifier ? "border-red-500" : "border-gray-300"
               }`}
               disabled={loading}
             />
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+            {errors.loginIdentifier && <p className="mt-1 text-sm text-red-600">{errors.loginIdentifier}</p>}
           </div>
 
           <div className="mb-6">

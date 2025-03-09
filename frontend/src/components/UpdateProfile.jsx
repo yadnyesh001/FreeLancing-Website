@@ -37,9 +37,9 @@ const UpdateProfile = () => {
         const response = await axiosInstance.get(`/users/${userId}`);
         
         const userData = {
-          name: response.data.name || user.name || "",
+          name: response.data.username || user.username || "",
           email: response.data.email || user.email || "",
-          profileImage: response.data.profileImage || getAvatarUrl(response.data.name || user.name),
+          profileImage: response.data.profileImage || getAvatarUrl(response.data.username || user.username),
           skills: response.data.skills || user.skills || [],
           bio: response.data.bio || user.bio || ""
         };
@@ -165,7 +165,7 @@ const UpdateProfile = () => {
       <div className="mb-4 flex flex-col items-center">
         <div className="relative mb-2">
           <img 
-            src={formData.profileImage || getAvatarUrl(formData.name)} 
+            src={formData.profileImage || getAvatarUrl(formData.username)} 
             alt="Profile" 
             className="w-32 h-32 rounded-full object-cover border-2 border-blue-200"
           />
@@ -193,7 +193,7 @@ const UpdateProfile = () => {
         <input
           type="text"
           name="name"
-          value={formData.name}
+          value={formData.username}
           onChange={handleChange}
           placeholder="Full Name"
           className="w-full p-2 border rounded"

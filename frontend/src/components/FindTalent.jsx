@@ -89,14 +89,14 @@ const FindTalent = () => {
               <div className="flex items-start gap-6">
                 <div className="relative">
                   <img
-                    src={getAvatarUrl(freelancer.name)}
-                    alt={`${freelancer.name}'s avatar`}
+                    src={getAvatarUrl(freelancer.username)}
+                    alt={`${freelancer.username}'s avatar`}
                     className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 p-1 object-cover border-2 border-white shadow-md"
                   />
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
-                    <h3 className="text-xl font-bold text-gray-800">{freelancer.name}</h3>
+                    <h3 className="text-xl font-bold text-gray-800">{freelancer.username}</h3>
                     <RatingDisplay rating={freelancer.rating} />
                   </div>
                   <p className="text-gray-600 mt-1 text-sm">Joined: {formatDate(freelancer.createdAt)}</p>
