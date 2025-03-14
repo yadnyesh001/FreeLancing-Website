@@ -298,7 +298,7 @@ const AdminDashboard = () => {
         users.map((user) => (
           <div 
             key={user._id} 
-            className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex justify-between items-center"
+            className="bg-white p-3.5 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex justify-between items-center"
           >
             <div className="flex flex-col">
               <span className="text-gray-800 font-semibold text-lg">{user.username}</span>
@@ -435,7 +435,7 @@ const AdminDashboard = () => {
               )}
 
               {selectedSection === 'clients' && (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <h2 className="text-2xl font-bold text-gray-800">Clients</h2>
                   
                   {/* Search Bar for Clients */}
@@ -464,7 +464,7 @@ const AdminDashboard = () => {
               )}
 
               {selectedSection === 'freelancers' && (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <h2 className="text-2xl font-bold text-gray-800">Freelancers</h2>
                   
                   {/* Search Bar for Freelancers */}
