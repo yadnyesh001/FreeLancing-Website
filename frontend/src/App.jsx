@@ -51,7 +51,14 @@ function App() {
 
           <Route path="/find-work" element={<FindWork />} />
           <Route path="/find-talent" element={<FindTalent />} />
-          <Route path="/update-profile" element={<UpdateProfile/>} />
+          <Route
+            path="/update-profile"
+            element={
+              <ProtectedRoute allowedRoles={["freelancer"]}>
+                <UpdateProfile />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </main>
       <Footer />
