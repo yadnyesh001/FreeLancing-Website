@@ -7,9 +7,12 @@ import projectRoutes from './routes/project.route.js';
 import proposalRoutes from './routes/proposal.route.js';
 import cors from 'cors';
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
+
 dotenv.config();
 
 const app = express();
+  app.use(cookieParser());
 app.use(morgan("dev"));
 const PORT = process.env.PORT || 3000;
 

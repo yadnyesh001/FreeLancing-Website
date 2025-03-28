@@ -4,8 +4,7 @@ import { axiosInstance } from "../lib/axios";
 
 const getAvatarUrl = (name) => {
   if (!name) return "https://api.dicebear.com/7.x/initials/svg?seed=user";
-  const firstLetter = name.charAt(0).toLowerCase();
-  return `https://api.dicebear.com/7.x/initials/svg?seed=${firstLetter}`;
+  return `https://api.dicebear.com/7.x/initials/svg?seed=${name.charAt(0).toLowerCase()}`;
 };
 
 const UpdateProfile = () => {
@@ -14,13 +13,11 @@ const UpdateProfile = () => {
     username: "",
     email: "",
     profileImage: "",
-    skills: [],
     bio: ""
   });
   const [originalData, setOriginalData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [skillInput, setSkillInput] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -31,17 +28,13 @@ const UpdateProfile = () => {
           setError("User ID not found. Please log in.");
           return;
         }
-
         const { data } = await axiosInstance.get(`/users/${userId}`);
-
         const userData = {
           username: data.username || user.username || "",
           email: data.email || user.email || "",
           profileImage: data.profileImage || getAvatarUrl(data.username || user.username),
-          skills: data.skills || user.skills || [],
           bio: data.bio || user.bio || ""
         };
-
         setFormData(userData);
         setOriginalData(userData);
       } catch (err) {
@@ -49,7 +42,6 @@ const UpdateProfile = () => {
         setError("Failed to load user profile.");
       }
     };
-
     fetchUserProfile();
   }, [user]);
 
@@ -69,32 +61,10 @@ const UpdateProfile = () => {
     }
   };
 
-  const addSkill = () => {
-    const trimmedSkill = skillInput.trim();
-    if (trimmedSkill && !formData.skills.includes(trimmedSkill)) {
-      setFormData((prevData) => ({
-        ...prevData,
-        skills: [...prevData.skills, trimmedSkill]
-      }));
-      setSkillInput("");
-    }
-  };
-
-  const removeSkill = (skillToRemove) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      skills: prevData.skills.filter((skill) => skill !== skillToRemove)
-    }));
-  };
-
   const getChangedFields = () => {
     const changedFields = {};
     Object.keys(formData).forEach((key) => {
-      if (key === "skills") {
-        if (JSON.stringify(formData.skills) !== JSON.stringify(originalData.skills)) {
-          changedFields.skills = formData.skills;
-        }
-      } else if (formData[key] !== originalData[key]) {
+      if (formData[key] !== originalData[key]) {
         changedFields[key] = formData[key];
       }
     });
@@ -105,36 +75,37 @@ const UpdateProfile = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
       const userId = user.id || user._id;
       const updatedFields = getChangedFields();
-
-      if (Object.keys(updatedFields).length > 0) {
-        await axiosInstance.patch(`/users/${userId}`, updatedFields);
-        setOriginalData((prevData) => ({ ...prevData, ...updatedFields }));
-        setError("Profile updated successfully!");
-      } else {
-        setError("No changes to update.");
+      if (!userId) {
+        setError("User ID not found. Please log in.");
+        setLoading(false);
+        return;
       }
+      if (Object.keys(updatedFields).length === 0) {
+        setError("No changes to update.");
+        setLoading(false);
+        return;
+      }
+      await axiosInstance.patch(`/users/${userId}`, updatedFields);
+      setOriginalData((prevData) => ({ ...prevData, ...updatedFields }));
+      setError("Profile updated successfully!");
     } catch (err) {
       console.error("Error updating profile:", err);
       setError(err.response?.data?.message || "Error updating profile");
     }
-
     setLoading(false);
   };
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white shadow-lg rounded-lg">
       <h2 className="text-xl font-semibold mb-4 text-center">Update Profile</h2>
-
       {error && (
         <div className={`mb-4 p-2 rounded ${error.includes("successfully") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
           {error}
         </div>
       )}
-
       <div className="mb-4 flex flex-col items-center">
         <div className="relative mb-2">
           <img
@@ -161,31 +132,10 @@ const UpdateProfile = () => {
           </button>
         </div>
       </div>
-
       <form onSubmit={handleSubmit} className="space-y-3">
         <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="Full Name" className="w-full p-2 border rounded" />
         <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email Address" className="w-full p-2 border rounded" />
-
-        <div className="flex space-x-2">
-          <input type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} placeholder="Add Skill" className="flex-grow p-2 border rounded" />
-          <button type="button" onClick={addSkill} className="bg-blue-500 text-white p-2 rounded">
-            +
-          </button>
-        </div>
-
-        <div className="flex flex-wrap gap-2 mb-2">
-          {formData.skills.map((skill) => (
-            <div key={skill} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center text-sm">
-              {skill}
-              <button type="button" onClick={() => removeSkill(skill)} className="ml-2 text-red-500">
-                x
-              </button>
-            </div>
-          ))}
-        </div>
-
         <textarea name="bio" value={formData.bio} onChange={handleChange} placeholder="Bio" className="w-full p-2 border rounded min-h-[80px]" />
-
         <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded" disabled={loading}>
           {loading ? "Updating..." : "Update Profile"}
         </button>

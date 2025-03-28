@@ -11,7 +11,8 @@ import FindTalent from "./components/FindTalent.jsx";
 import FreelancerDashboard from "./components/FreelancerDashboard.jsx";
 import ClientDashboard from "./components/ClientDashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import UpdateProfile from "./components/UpdateProfile.jsx";
+import UpdateProfileFreelancer from "./components/UpdateProfileFreelancer.jsx";
+import UpdateProfileClient from "./components/UpdateProfileClient.jsx";
 
 function App() {
   return (
@@ -52,10 +53,18 @@ function App() {
           <Route path="/find-work" element={<FindWork />} />
           <Route path="/find-talent" element={<FindTalent />} />
           <Route
-            path="/update-profile"
+            path="/update-profile-freelancer"
             element={
               <ProtectedRoute allowedRoles={["freelancer"]}>
-                <UpdateProfile />
+                <UpdateProfileFreelancer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/update-profile-client"
+            element={
+              <ProtectedRoute allowedRoles={["client"]}>
+                <UpdateProfileClient />
               </ProtectedRoute>
             }
           />

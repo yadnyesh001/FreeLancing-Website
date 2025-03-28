@@ -1,7 +1,7 @@
 {
   "name": "freelancing-website",
   "version": "1.0.0",
-  "description": "��#\u0000 \u0000F\u0000r\u0000e\u0000e\u0000L\u0000a\u0000n\u0000c\u0000i\u0000n\u0000g\u0000-\u0000W\u0000e\u0000b\u0000s\u0000i\u0000t\u0000e\u0000\r\u0000 \u0000",
+  "description": "��#\x00 \x00F\x00r\x00e\x00e\x00L\x00a\x00n\x00c\x00i\x00n\x00g\x00-\x00W\x00e\x00b\x00s\x00i\x00t\x00e\x00\r\x00 \x00",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "jsonwebtoken": "^9.0.2",

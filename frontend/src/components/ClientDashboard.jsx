@@ -88,7 +88,7 @@ const ClientDashboard = ({
   };
  
   const handleUpdateProfile = () => {
-    navigate('/update-profile');
+    navigate('/update-profile-client');
   };
 
   return (

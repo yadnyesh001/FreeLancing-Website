@@ -33,25 +33,32 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    // Check username uniqueness if changing username
+    // Check username uniqueness only if changing it
     if (updateData.username && updateData.username !== user.username) {
-      const existingUsername = await User.findOne({ username: updateData.username });
+      const existingUsername = await User.findOne({ 
+        username: updateData.username, 
+        _id: { $ne: userId }  // Exclude the current user from the search
+      });
+
       if (existingUsername) {
         return res.status(400).json({
           success: false,
-          message: "Username already exists"
+          message: "Username already exists. Please choose another one."
         });
       }
     }
 
-    // Use method to update profile
-    const updatedUser = await user.updateProfile(updateData);
+    // Update profile
+    const updatedUser = await User.findByIdAndUpdate(
+      userId, 
+      updateData, 
+      { new: true, runValidators: true }
+    );
 
     res.status(200).json({ 
       success: true, 
       message: "Profile updated successfully", 
       user: {
-        // Exclude sensitive fields
         _id: updatedUser._id,
         username: updatedUser.username,
         email: updatedUser.email,
@@ -65,7 +72,6 @@ export const updateProfile = async (req, res) => {
   } catch (error) {
     console.error('Profile update error:', error);
 
-    // Handle specific Mongoose validation errors
     if (error.name === 'ValidationError') {
       return res.status(400).json({
         success: false,
@@ -81,6 +87,7 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
+
 
 export const getFreelancers = async (req, res) => {
   try {

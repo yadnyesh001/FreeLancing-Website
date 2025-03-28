@@ -84,7 +84,7 @@ const FreelancerDashboard = ({
   };
 
   const handleUpdateProfile = () => {
-    navigate('/update-profile');
+    navigate('/update-profile-freelancer');
   };
 
   return (
